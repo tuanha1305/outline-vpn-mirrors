@@ -776,7 +776,7 @@ start_menu() {
     fi
 
     echo "[.]"
-    if [ "$(ps -e | grep -c X)" == 1 ] && [ "$(dpkg -l ubuntu-desktop | grep -c "desktop")" == 1 ]; then
+    if [ "$(ps -e | grep -c "Xwayland")" == 1 ] && [ "$(dpkg -l ubuntu-desktop | grep -c "desktop")" == 1 ]; then
         options_for_ubuntu_desktop
     else
         options_for_ubuntu_server
