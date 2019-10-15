@@ -422,28 +422,30 @@ check_outline_clients_are_enabled() {
 install_outline_manager_client() {
     cur_dir=$(pwd)
     if [ ! -f "Outline-Manager.AppImage" ]; then
-        sudo wget ${Jigsaw_Code_pre_url}/manager/stable/Outline-Manager.AppImage
+        wget ${Jigsaw_Code_pre_url}/manager/stable/Outline-Manager.AppImage
     else
-        sudo wget -N -c ${Jigsaw_Code_pre_url}/manager/stable/Outline-Manager.AppImage
+        wget -N -c ${Jigsaw_Code_pre_url}/manager/stable/Outline-Manager.AppImage
     fi
 
-    sudo chmod a+x Outline-Manager.AppImage
-    mkdir -p outline/outline-manager-client
-    sudo mv Outline-Manager.AppImage ${cur_dir}/outline-manager-client
+    chmod +x Outline-Manager.AppImage
+    mkdir outline-manager-client
+    mv Outline-Manager.AppImage ${cur_dir}/outline-manager-client
 
     seingshinlee_pre_url="https://raw.githubusercontent.com/seingshinlee/outline-vpn-mirrors/dev/statics"
     if [ ! -f "outline-manager-client.png" ]; then
-        sudo wget ${seingshinlee_pre_url}/outline-manager-client.png
+        wget ${seingshinlee_pre_url}/outline-manager-client.png
     fi
 
-    sudo mv outline-manager-client.png ${cur_dir}/outline-manager-client
+    mv outline-manager-client.png ${cur_dir}/outline-manager-client
 
     cat >${cur_dir}/outline-manager-client/outline-manager-client.desktop <<-EOF
 [Desktop Entry]
 Encoding=UTF-8
 Name=Outline Manager
 GenericName=Outline VPN - Outline Manager Client
-Comment=The Outline Manager application creates and manages Outline servers, powered by Shadowsocks.
+Comme
+Auto
+Autont=The Outline Manager application creates and manages Outline servers, powered by Shadowsocks.
 Exec=/opt/outline/outline-manager-client/Outline-Manager.AppImage %f
 Icon=/opt/outline/outline-manager-client/outline-manager-client.png
 Terminal=false
@@ -452,9 +454,10 @@ Categories=Internet
 StartupNotify=true
 EOF
 
-    sudo rsync -a ${cur_dir}/ /opt/outline
+    sudo rsync -a ${cur_dir}/outline-manager-client /opt/outline
     sudo ln -sfn /opt/outline/outline-manager-client/outline-manager-client.desktop /usr/share/applications/outline-manager-client.desktop
     sudo ln -sfn /opt/outline/outline-manager-client/outline-manager-client.desktop $HOME/.config/autostart/outline-manager-client.desktop
+    rm -rf ${cur_dir}/outline-manager-client
     echo -e "> ${Okay} Install Outline Manager Client successfully!"
 }
 
@@ -462,19 +465,19 @@ EOF
 install_outline_client() {
     cur_dir=$(pwd)
     if [ ! -f "Outline-Client.AppImage" ]; then
-        sudo wget ${Jigsaw_Code_pre_url}/client/stable/Outline-Client.AppImage
+        wget ${Jigsaw_Code_pre_url}/client/stable/Outline-Client.AppImage
     else
-        sudo wget -N -c ${Jigsaw_Code_pre_url}/client/stable/Outline-Client.AppImage
+        wget -N -c ${Jigsaw_Code_pre_url}/client/stable/Outline-Client.AppImage
     fi
 
-    sudo chmod a+x Outline-Client.AppImage
-    mkdir -p outline/outline-client
-    sudo mv Outline-Client.AppImage ${cur_dir}/outline-client
+    chmod +x Outline-Client.AppImage
+    mkdir outline-client
+    mv Outline-Client.AppImage ${cur_dir}/outline-client
 
     seingshinlee_pre_url="https://raw.githubusercontent.com/seingshinlee/outline-vpn-mirrors/dev/statics"
 
     if [ ! -f "outline-client.png" ]; then
-        sudo wget ${seingshinlee_pre_url}/outline-client.png
+        wget ${seingshinlee_pre_url}/outline-client.png
     fi
 
     sudo mv outline-client.png ${cur_dir}/outline-client
@@ -493,9 +496,10 @@ Categories=Internet
 StartupNotify=true
 EOF
 
-    sudo rsync -a ${cur_dir}/ /opt/outline
+    sudo rsync -a ${cur_dir}/outline-client /opt/outline
     sudo ln -sfn /opt/outline/outline-client/outline-client.desktop /usr/share/applications/outline-client.desktop
     sudo ln -sfn /opt/outline/outline-client/outline-client.desktop $HOME/.config/autostart/outline-client.desktop
+    rm -rf ${cur_dir}/outline-client
     echo -e "> ${Okay} Install Outline Client successfully!"
 }
 
@@ -503,13 +507,14 @@ EOF
 update_outline_manager_client() {
     sudo kill $(ps -ef | grep "outline-manger" | awk '{print $2}')
     if [ ! -f "Outline-Manager.AppImage" ]; then
-        sudo wget ${Jigsaw_Code_pre_url}/manager/stable/Outline-Manager.AppImage
+        wget ${Jigsaw_Code_pre_url}/manager/stable/Outline-Manager.AppImage
     else
-        sudo wget -N -c ${Jigsaw_Code_pre_url}/manager/stable/Outline-Manager.AppImage
+        wget -N -c ${Jigsaw_Code_pre_url}/manager/stable/Outline-Manager.AppImage
     fi
 
-    sudo chmod a+x Outline-Manager.AppImage
+    chmod +x Outline-Manager.AppImage
     sudo rsync -a Outline-Manager.AppImage /opt/outline/outline-manager-client/outline-manager-client
+    rm -rf Outline-Manager.AppImage
     echo -e "> ${Okay} Update Outline Manager Client successfully!"
 }
 
@@ -517,19 +522,21 @@ update_outline_manager_client() {
 update_outline_client() {
     sudo kill $(ps -ef | grep "outline-client" | awk '{print $2}')
     if [ ! -f "Outline-Client.AppImage" ]; then
-        sudo wget ${Jigsaw_Code_pre_url}/client/stable/Outline-Client.AppImage
+        wget ${Jigsaw_Code_pre_url}/client/stable/Outline-Client.AppImage
     else
-        sudo wget -N -c ${Jigsaw_Code_pre_url}/client/stable/Outline-Client.AppImage
+        wget -N -c ${Jigsaw_Code_pre_url}/client/stable/Outline-Client.AppImage
     fi
 
-    sudo chmod a+x Outline-Client.AppImage
+    chmod +x Outline-Client.AppImage
     sudo rsync -a Outline-Client.AppImage /opt/outline/outline-client/outline-client
+    rm -rf Outline-Client.AppImage
     echo -e "> ${Okay} Update Outline Client successfully!"
 }
 
 # Remove Outline Manager Client
 remove_all_outline_manager_client() {
-    sudo kill $(ps -ef | grep "outline-manager" | awk '{print $2}')
+    sudo kill $(ps -ef | grep "outline-manager" | awk '{print $2}') 2>/dev/null
+    echo "Continuing..."
     sudo rm -rf /opt/outline/outline-manager-client
     sudo rm /usr/share/applications/outline-manager-client.desktop
     rm $HOME/.config/autostart/outline-manager-client.desktop
@@ -543,7 +550,8 @@ remove_all_outline_manager_client() {
 
 # Remove Outline Client
 remove_all_outline_client() {
-    sudo kill $(ps -ef | grep "outline-client" | awk '{print $2}')
+    sudo kill $(ps -ef | grep "outline-client" | awk '{print $2}') 2>/dev/null
+    echo "Continuing..."
     sudo rm -rf /opt/outline/outline-client
     sudo rm /usr/share/applications/outline-client.desktop
     rm $HOME/.config/autostart/outline-client.desktop
