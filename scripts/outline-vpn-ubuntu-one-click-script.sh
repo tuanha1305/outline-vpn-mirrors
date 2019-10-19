@@ -272,7 +272,7 @@ upgrade_ubuntu_version() {
 
     case "${param}" in
         Y|y|[Yy][Ee][Ss])
-            echo -e "> ${Okay} Starting to execut upgrade commands... Done."
+            echo -e "> ${Okay} Starting to execute upgrade commands... Done."
             echo -e "> ${Okay} Follow the prompts to perform the appropriate action!"
             sleep 2s
             sudo apt update -y
@@ -571,7 +571,7 @@ topic_information() {
     echo "| Author: Seingshin Lee                                                   |"
     echo "| E-mail: <seingshinlee@gmail.com>                                        |"
     echo "| Website: https://seingshinlee.com                                       |"
-    echo "| Project Github: https://seingshinlee.com/outline-vpn-mirrors            |"
+    echo "| Project Github: https://github.com/seingshinlee/outline-vpn-mirrors     |"
     echo "+=========================================================================+"
 }
 
