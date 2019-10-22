@@ -784,7 +784,7 @@ start_menu() {
     fi
 
     echo "[.]"
-    if [ "$(ps -e | grep -c "Xwayland")" == 1 ] && [ "$(dpkg -l ubuntu-desktop | grep -c "desktop")" == 1 ]; then
+    if [ "$(ps -e | grep -c "Xwayland")" == 1 ] && [ "$(dpkg -l | grep -c "x11*")" -ge 1 ]; then
         options_for_ubuntu_desktop
     else
         options_for_ubuntu_server
@@ -973,7 +973,7 @@ start_menu() {
             ;;
         *)
             count_07=$[${count_07}+1]
-            if [ "$(ps -e | grep -c X)" == 1 ] && [ "$(dpkg -l | grep -c "x11*")" -ge 1 ]; then
+            if [ "$(ps -e | grep -c "Xwayland")" == 1 ] && [ "$(dpkg -l | grep -c "x11*")" -ge 1 ]; then
                 clear
                 echo -e "< ${read_echo_error} An invalid number, please re-enter a legal and right number from (00-28)! Done. "
             else
