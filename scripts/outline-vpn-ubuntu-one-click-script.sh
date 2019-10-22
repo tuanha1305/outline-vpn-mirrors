@@ -571,7 +571,7 @@ topic_information() {
     echo "| Author: Seingshin Lee                                                   |"
     echo "| E-mail: <seingshinlee@gmail.com>                                        |"
     echo "| Website: https://seingshinlee.com                                       |"
-    echo "| Project Github: https://github.com/seingshinlee/outline-vpn-mirrors     |"
+    echo "| Project GitHub: https://github.com/seingshinlee/outline-vpn-mirrors     |"
     echo "+=========================================================================+"
 }
 
