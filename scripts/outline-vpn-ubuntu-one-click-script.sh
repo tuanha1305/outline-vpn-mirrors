@@ -47,7 +47,7 @@ read_echo_error=$(echo -e "${Error}")
 
 ubuntu_version=$(lsb_release --release | cut -f 2)
 ubuntu_version_prefix=$(echo ${ubuntu_version} | cut -c "1,2")
-ubuntu_version_echo="> ${Okay} Your Ubuntu Linux version is ${ubuntu_version}, it's ok and continue... Done."
+ubuntu_version_echo="> ${Okay} Your Ubuntu Linux version is ${green_foreground}${ubuntu_version}${reset}, it's ok and continue... Done."
 Jigsaw_Code_pre_url="https://raw.githubusercontent.com/Jigsaw-Code/outline-releases/master"
 
 # Check if Docker CE is installed or not
@@ -171,7 +171,7 @@ update_docker_ce() {
 check_sys_release() {
     sys_release=$(cat /etc/os-release | awk '$1=="ID=ubuntu" {print $1}' | cut -b 4-9)
     if [ "${sys_release}" == "ubuntu" ]; then
-        echo -e "> ${Okay} Your Linux release is Ubuntu ${ubuntu_version}. It's okay, Done."
+        echo -e "> ${Okay} Your Linux release is Ubuntu ${green_foreground}${ubuntu_version}${reset}. It's okay, Done."
     else
         echo -e "> ${Error} This script is only supported on Ubuntu Linux, please reinstall an Ubuntu Linux operating system and try again."
         exit_information
@@ -181,18 +181,25 @@ check_sys_release() {
 # Check CPU physical architecture
 phy_arch=$(arch)
 check_phy_arch() {
-    if [[ "${phy_arch}" == "x86_64" ]]; then
+    if [[ "${phy_arch}" == "x86_64" ]]; then # Actual architecture
         phy_arch=amd64
-    elif [[ "${phy_arch}" == "arm64" ]]; then
+    elif [[ "${phy_arch}" == "aarch64" ]]; then # Actual architecture
         phy_arch=arm64
+    elif [[ "${phy_arch}" == "amd64" ]]; then # Auxiliary architecture
+        phy_arch="x64(x86_64 or amd64)"
+    elif [[ "${phy_arch}" == "arm64" ]]; then # Auxiliary architecture
+        :
+    elif [[ "${phy_arch}" == "x64(x86_64 or amd64)" ]]; then # Auxiliary architecture
+        phy_arch="amd64"
     else
         echo -e "> ${Notice} Physical architecture is not supported, please replace a new CPU architecture and try again."
-        echo -e "> ${Notice} Only x86_64, amd64 and arm64 are supported!"
+        echo -e "> ${Notice} Only x64(x86_64 or amd64) and arm64 are supported!"
         echo -e "> ${Notice} Or you can go to the official website to find out more CPU architectures..."
         echo -e "> ${Notice} Click the right mouse button to open the link: https://docs.docker.com/install/linux/docker-ce/ubuntu"
         exit_information
     fi
-    echo -e "> ${Okay} Your Ubuntu Linux Physical architecture is ${phy_arch}, it's ok and continuing... Done."
+
+    echo -e "> ${Okay} Your Ubuntu Linux Physical architecture is ${green_foreground}${phy_arch}${reset}, it's ok and continuing... Done."
 }
 
 # Check number of Bit
@@ -200,7 +207,7 @@ bit=
 check_bit() {
     if [ "$(getconf WORD_BIT)" == "32" ] && [ "$(getconf LONG_BIT)" == "64" ]; then
         bit=64
-        echo -e "> ${Okay} Your operating system is ${bit}-Bit, continuing... Done."
+        echo -e "> ${Okay} Your operating system is ${green_foreground}${bit}-Bit${reset}, continuing... Done."
     else
         bit=32
         echo ${bit}
@@ -213,9 +220,9 @@ check_bit() {
 check_memory_total() {
     memory_total=$[$(grep MemTotal /proc/meminfo | awk '{print $2}') / 1024 * 11 / 10]
     if [ "${memory_total}" -ge 512 ]; then
-        echo -e "> ${Okay} Your machine memory is $[memory_total * 10 / 11]MB, it's okay, continuing... Done."
+        echo -e "> ${Okay} Your machine memory is ${green_foreground}$[memory_total * 10 / 11]${reset} MB, it's okay, continuing... Done."
     else
-        echo -e "> ${Error} Machine memory is less than 512MB, please adjust to the memory size and try again."
+        echo -e "> ${Error} Machine memory is ${yellow_foreground}less than 512 MB${reset}, please adjust to the memory size and try again."
         exit_information
     fi
 }
@@ -274,7 +281,7 @@ upgrade_ubuntu_version() {
         Y|y|[Yy][Ee][Ss])
             echo -e "> ${Okay} Starting to execute upgrade commands... Done."
             echo -e "> ${Okay} Follow the prompts to perform the appropriate action!"
-            sleep 2s
+            sleep 1s
             sudo apt update -y
             sudo apt upgrade -y
             sudo apt dist-upgrade -y
@@ -316,7 +323,7 @@ check_ubuntu_version() {
             ;;
         *)
             if [ "${count_03}" == 1 ]; then
-                echo -e "> ${Notice} Your Ubuntu Linux version is older, please reinstall the newer version like 19.04, 18.10, 18.04 LTS or 16.04 LTS and try again. (+)"
+                echo -e "> ${Notice} Your Ubuntu Linux version is ${yellow_foreground}older${reset}, please reinstall the newer version like 19.04, 18.10, 18.04 LTS or 16.04 LTS and try again. (+)"
                 read -p "< ${read_echo_notice} Or do you upgrade to higher Ubuntu Linux version now? Press enter [y/N]: " param
             else
                 read -p "< ${read_echo_notice} Do you certainly upgrade to higher Ubuntu Linux version now? Press enter [y/N]: " param
@@ -628,6 +635,7 @@ continue_start_menu_or_not() {
     read -p "< ${read_echo_notice} Do you want to continue using One-click shell script? [y/N]: " param
     case ${param} in
         Y|y|[Yy][Ee][Ss])
+            clear
             start_menu
             ;;
         N|n|[Nn][Oo])
@@ -727,7 +735,7 @@ option_26() {
         remove_all_docker_ce
         install_docker_ce
     fi
-    sleep 2s
+    sleep 1s
     check_docker_ce_service_status
 }
 
@@ -742,7 +750,7 @@ option_27() {
             install_outline_manager_client
         else
             install_outline_manager_client
-            sleep 2s
+            sleep 1s
             install_outline_client
         fi
 }
@@ -776,7 +784,6 @@ start_menu() {
     topic_information
 
     if [ "${count_07}" == 1 ]; then
-        phy_arch=$(arch)
         check_phy_arch
         check_bit
         check_memory_total
@@ -784,11 +791,13 @@ start_menu() {
     fi
 
     echo "[.]"
-    if [ "$(ps -e | grep -c "Xwayland")" == 1 ] && [ "$(dpkg -l | grep -c "x11*")" -ge 1 ]; then
+    if [ "$(ps -e | grep -c "Xwayland")" == 1 ] && [ "$(dpkg -l | grep -c "x11*")" -ge 1 ] || [ "$(dpkg -l | grep -c "unity")" -ge 1 ]; then
         options_for_ubuntu_desktop
     else
         options_for_ubuntu_server
     fi
+
+    count_07=$[${count_07}+1]
 
     case "${num}" in
         01)
@@ -880,7 +889,7 @@ start_menu() {
             check_outline_clients_are_installed
             if [ ! -d "/opt/outline/outline-manager-client" ] && [ ! -d "/opt/outline/outline-client" ]; then
                 install_outline_manager_client
-                sleep 2s
+                sleep 1s
                 install_outline_client
             else
                 echo -e "> ${Okay} Now, Both of them has existed!"
@@ -910,11 +919,11 @@ start_menu() {
             check_outline_clients_are_installed
             if [ ! -d "/opt/outline/outline-manager-client" ] && [ ! -d "/opt/outline/outline-client" ]; then
                 install_outline_manager_client
-                sleep 2s
+                sleep 1s
                 install_outline_client
             else
                 update_outline_manager_client
-                sleep 2s
+                sleep 1s
                 update_outline_client
             fi
             ;;
@@ -943,7 +952,7 @@ start_menu() {
             check_outline_clients_are_installed
             if [ -d "/opt/outline/outline-manager-client" ] && [ -d "/opt/outline/outline-client" ]; then
                 remove_all_outline_manager_client
-                sleep 2s
+                sleep 1s
                 remove_all_outline_client
             else
                 echo -e "> ${Okay} Outline Clients is not exist!"
@@ -958,33 +967,32 @@ start_menu() {
         27)
             check_all
             option_between_26_and_27
-            sleep 2s
+            sleep 1s
             option_27
             ;;
         28)
             check_all
             option_26
             option_between_26_and_27
-            sleep 2s
+            sleep 1s
             option_27
             ;;
         00)
             exit_information
             ;;
         *)
-            count_07=$[${count_07}+1]
-            if [ "$(ps -e | grep -c "Xwayland")" == 1 ] && [ "$(dpkg -l | grep -c "x11*")" -ge 1 ]; then
-                clear
+            clear
+            if [ "$(ps -e | grep -c "Xwayland")" == 1 ] && [ "$(dpkg -l | grep -c "x11*")" -ge 1 ] || [ "$(dpkg -l | grep -c "unity")" -ge 1 ]; then
                 echo -e "< ${read_echo_error} An invalid number, please re-enter a legal and right number from (00-28)! Done. "
             else
-                clear
                 echo -e "< ${read_echo_error} An invalid number, please re-enter a legal and right number from (00-16)! Done. "
             fi
             sleep 2s
+            clear
             start_menu
             ;;
     esac
-    sleep 2s
+    sleep 1s
     continue_start_menu_or_not
 }
 
