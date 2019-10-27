@@ -127,7 +127,7 @@ The client's user interface is implemented in [Polymer](https://www.polymer-proj
 
 - **Version**: Ubuntu Server 16.04 LTS, Ubuntu Desktop 16.04 LTS, Ubuntu Server 18.04 LTS, Ubuntu Desktop 18.04 LTS, Ubuntu Server 18.10, Ubuntu Desktop 18.10, Ubuntu Server 19.04 or Ubuntu Desktop 19.04
 - **Linux Kernel Version**: >= v3.10
-- **Architecture**: x86_64 or ARM
+- **Architecture**: x64(x86_64 and AMD64) or **ARMv8 [👿ARMv8 needs to compile offical source codes by yourself.]()**
 - **Number of Bit**: 64-Bit
 - **Security**: Lastest version or Older version, still supported
 - **User**: A non-root user
